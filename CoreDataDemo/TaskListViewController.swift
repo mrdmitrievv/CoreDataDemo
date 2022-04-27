@@ -72,7 +72,12 @@ class TaskListViewController: UITableViewController {
         
         let saveAction = UIAlertAction(title: "Save", style: .default) { _ in
             guard let task = alert.textFields?.first?.text, !task.isEmpty else { return }
-            self.save(task)
+//            self.save(task)
+            CoreDataManager.shared.getUpdatedTasksList(add: task, to: self.tasks, inContext: self.context) { updatedTasks in
+                self.tasks = updatedTasks
+                let cellIndex = IndexPath(row: self.tasks.count - 1, section: 0)
+                self.tableView.insertRows(at: [cellIndex], with: .automatic)
+            }
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .destructive)
@@ -82,7 +87,7 @@ class TaskListViewController: UITableViewController {
         present(alert, animated: true)
     }
     
-    
+    /*
     private func save(_ taskName: String) {
         guard let entityDescription = NSEntityDescription.entity(forEntityName: "Task", in: context) else { return }
         guard let task = NSManagedObject(entity: entityDescription, insertInto: context) as? Task else { return }
@@ -102,7 +107,7 @@ class TaskListViewController: UITableViewController {
         }
         
         dismiss(animated: true)
-    }
+    }*/
 }
 
 extension TaskListViewController {
@@ -122,16 +127,18 @@ extension TaskListViewController {
     
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            context.delete(tasks[indexPath.row])
+//            context.delete(tasks[indexPath.row])
+            CoreDataManager.shared.deleteTask(inContext: context, fromTasksList: tasks, withIndexPath: indexPath)
             tasks.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .automatic)
+            /*
             if context.hasChanges {
                 do {
                     try context.save()
                 } catch let error {
                     print(error)
                 }
-            }
+            }*/
         }
     }
     
