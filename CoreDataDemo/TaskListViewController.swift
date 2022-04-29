@@ -56,6 +56,7 @@ class TaskListViewController: UITableViewController {
         showAlert(withTitle: "New Task", andMessage: "Вы хотите добавть новую задачу?")
     }
     
+    
     private func fetchData() {
         let fetchRequest: NSFetchRequest<Task> = Task.fetchRequest()
         
